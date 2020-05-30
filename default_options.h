@@ -154,6 +154,7 @@ IMPORTANT: Some options will require "make clean" after changes */
  * group16 - 4096 bit, sha2-512
  * group1 - 1024 bit, sha1
  * curve25519 - elliptic curve DH
+ * curve448 - elliptic curve DH
  * ecdh - NIST elliptic curve DH (256, 384, 521)
  *
  * group1 is too small for security though is necessary if you need 
@@ -162,6 +163,7 @@ IMPORTANT: Some options will require "make clean" after changes */
  * group16 provides a greater strength level but is slower and increases binary size
  * curve25519 and ecdh algorithms are faster than non-elliptic curve methods
  * curve25519 increases binary size by ~2,5kB on x86-64
+ * curve448 increases binary size by ~2,5kB on x86-64
  * including either ECDH or ECDSA increases binary size by ~30kB on x86-64
 
  * Small systems should generally include either curve25519 or ecdh for performance.
@@ -171,6 +173,7 @@ IMPORTANT: Some options will require "make clean" after changes */
 #define DROPBEAR_DH_GROUP14_SHA256 1
 #define DROPBEAR_DH_GROUP16 0
 #define DROPBEAR_CURVE25519 1
+#define DROPBEAR_CURVE448 1
 #define DROPBEAR_ECDH 1
 #define DROPBEAR_DH_GROUP1 1
 

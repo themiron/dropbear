@@ -112,3 +112,29 @@ in this material are those of the author(s) and do not necessarily reflect the
 views of the National Science Foundation."
 This work was supported by the Netherlands Organisation for Scientific
 Research (NWO) under grant 639.073.005 and Veni 2013 project 13114.
+
+=====
+
+curve448.c:
+
+Modified The wolfSSL embedded SSL library (formerly CyaSSL).
+
+Copyright (C) 2006-2020 wolfSSL Inc.
+
+wolfSSL is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+wolfSSL is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA
+
+Based On Daniel J Bernstein's ed25519 Public Domain ref10 work.
+Small implementation based on Daniel Beer's ed25519 public domain work.
+Reworked for ed448 by Sean Parkinson.

@@ -100,6 +100,9 @@ enum dropbear_kex_mode {
 #if DROPBEAR_CURVE25519
 	DROPBEAR_KEX_CURVE25519,
 #endif
+#if DROPBEAR_CURVE448
+	DROPBEAR_KEX_CURVE448,
+#endif
 };
 
 struct dropbear_kex {

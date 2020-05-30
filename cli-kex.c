@@ -84,6 +84,18 @@ void send_msg_kexdh_init() {
 			buf_putstring(ses.writepayload, cli_ses.curve25519_param->pub, CURVE25519_LEN);
 			break;
 #endif
+#if DROPBEAR_CURVE448
+		case DROPBEAR_KEX_CURVE448:
+			if (ses.newkeys->algo_kex != cli_ses.param_kex_algo
+				|| !cli_ses.curve448_param) {
+				if (cli_ses.curve448_param) {
+					free_kexcurve448_param(cli_ses.curve448_param);
+				}
+				cli_ses.curve448_param = gen_kexcurve448_param();
+			}
+			buf_putstring(ses.writepayload, cli_ses.curve448_param->pub, CURVE448_LEN);
+			break;
+#endif
 	}
 
 	cli_ses.param_kex_algo = ses.newkeys->algo_kex;
@@ -153,6 +165,15 @@ void recv_msg_kexdh_reply() {
 			}
 			break;
 #endif
+#if DROPBEAR_CURVE448
+		case DROPBEAR_KEX_CURVE448:
+			{
+			buffer *ecdh_qs = buf_getstringbuf(ses.payload);
+			kexcurve448_comb_key(cli_ses.curve448_param, ecdh_qs, hostkey);
+			buf_free(ecdh_qs);
+			}
+			break;
+#endif
 	}
 
 #if DROPBEAR_NORMAL_DH
@@ -171,6 +192,12 @@ void recv_msg_kexdh_reply() {
 	if (cli_ses.curve25519_param) {
 		free_kexcurve25519_param(cli_ses.curve25519_param);
 		cli_ses.curve25519_param = NULL;
+	}
+#endif
+#if DROPBEAR_CURVE448
+	if (cli_ses.curve448_param) {
+		free_kexcurve448_param(cli_ses.curve448_param);
+		cli_ses.curve448_param = NULL;
 	}
 #endif
 

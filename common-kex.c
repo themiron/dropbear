@@ -37,6 +37,7 @@
 #include "runopts.h"
 #include "ecc.h"
 #include "curve25519.h"
+#include "curve448.h"
 #include "crypto_desc.h"
 
 static void kexinitialise(void);
@@ -777,6 +778,68 @@ void kexcurve25519_comb_key(const struct kex_curve25519_param *param, const buff
 }
 #endif /* DROPBEAR_CURVE25519 */
 
+#if DROPBEAR_CURVE448
+struct kex_curve448_param *gen_kexcurve448_param() {
+	/* Per http://cr.yp.to/ecdh.html */
+	struct kex_curve448_param *param = m_malloc(sizeof(*param));
+	const unsigned char basepoint[56] = {5};
+
+	genrandom(param->pub, CURVE448_LEN);
+	dropbear_curve448_scalarmult(param->pub, param->priv, basepoint);
+
+	return param;
+}
+
+void free_kexcurve448_param(struct kex_curve448_param *param) {
+	m_burn(param->priv, CURVE448_LEN);
+	m_free(param);
+}
+
+void kexcurve448_comb_key(const struct kex_curve448_param *param, const buffer *buf_pub_them,
+	sign_key *hostkey) {
+	unsigned char out[CURVE448_LEN];
+	const unsigned char* Q_C = NULL;
+	const unsigned char* Q_S = NULL;
+	char zeroes[CURVE448_LEN] = {0};
+
+	if (buf_pub_them->len != CURVE448_LEN)
+	{
+		dropbear_exit("Bad curve448");
+	}
+
+	dropbear_curve448_scalarmult(out, param->priv, buf_pub_them->data);
+
+	if (constant_time_memcmp(zeroes, out, CURVE448_LEN) == 0) {
+		dropbear_exit("Bad curve448");
+	}
+
+	m_mp_alloc_init_multi(&ses.dh_K, NULL);
+	bytes_to_mp(ses.dh_K, out, CURVE448_LEN);
+	m_burn(out, sizeof(out));
+
+	/* Create the remainder of the hash buffer, to generate the exchange hash.
+	   See RFC5656 section 4 page 7 */
+	if (IS_DROPBEAR_CLIENT) {
+		Q_C = param->pub;
+		Q_S = buf_pub_them->data;
+	} else {
+		Q_S = param->pub;
+		Q_C = buf_pub_them->data;
+	}
+
+	/* K_S, the host key */
+	buf_put_pub_key(ses.kexhashbuf, hostkey, ses.newkeys->algo_hostkey);
+	/* Q_C, client's ephemeral public key octet string */
+	buf_putstring(ses.kexhashbuf, (const char*)Q_C, CURVE448_LEN);
+	/* Q_S, server's ephemeral public key octet string */
+	buf_putstring(ses.kexhashbuf, (const char*)Q_S, CURVE448_LEN);
+	/* K, the shared secret */
+	buf_putmpint(ses.kexhashbuf, ses.dh_K);
+
+	/* calculate the hash H to sign */
+	finish_kexhashbuf();
+}
+#endif /* DROPBEAR_CURVE448 */
 
 void finish_kexhashbuf(void) {
 	hash_state hs;

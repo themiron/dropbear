@@ -302,8 +302,15 @@ static const struct dropbear_kex kex_ecdh_nistp521 = {DROPBEAR_KEX_ECDH, NULL, 0
 static const struct dropbear_kex kex_curve25519 = {DROPBEAR_KEX_CURVE25519, NULL, 0, NULL, &sha256_desc };
 #endif
 
+#if DROPBEAR_CURVE448
+static const struct dropbear_kex kex_curve448 = {DROPBEAR_KEX_CURVE448, NULL, 0, NULL, &sha512_desc };
+#endif
+
 /* data == NULL for non-kex algorithm identifiers */
 algo_type sshkex[] = {
+#if DROPBEAR_CURVE448
+	{"curve448-sha512", 0, &kex_curve448, 1, NULL},
+#endif
 #if DROPBEAR_CURVE25519
 	{"curve25519-sha256", 0, &kex_curve25519, 1, NULL},
 	{"curve25519-sha256@libssh.org", 0, &kex_curve25519, 1, NULL},

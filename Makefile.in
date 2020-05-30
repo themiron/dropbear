@@ -36,7 +36,7 @@ COMMONOBJS=dbutil.o buffer.o dbhelpers.o \
 		queue.o \
 		atomicio.o compat.o fake-rfc2553.o \
 		ltc_prng.o ecc.o ecdsa.o crypto_desc.o \
-		curve25519.o ed25519.o \
+		curve25519.o ed25519.o curve448.o \
 		dbmalloc.o \
 		gensignkey.o gendss.o genrsa.o gened25519.o
 
@@ -268,7 +268,7 @@ lint:
 ## Fuzzing targets
 
 # list of fuzz targets
-FUZZ_TARGETS=fuzzer-preauth fuzzer-pubkey fuzzer-verify fuzzer-preauth_nomaths fuzzer-kexdh fuzzer-kexecdh fuzzer-kexcurve25519
+FUZZ_TARGETS=fuzzer-preauth fuzzer-pubkey fuzzer-verify fuzzer-preauth_nomaths fuzzer-kexdh fuzzer-kexecdh fuzzer-kexcurve25519 fuzzer-kexcurve448
 
 FUZZER_OPTIONS = $(addsuffix .options, $(FUZZ_TARGETS))
 
@@ -308,6 +308,9 @@ fuzzer-kexecdh: fuzzer-kexecdh.o fuzz-harness.o
 	$(CXX) $(CXXFLAGS) $@.o $(LDFLAGS) $(svrfuzzobjs) -o $@$(EXEEXT) $(LIBTOM_LIBS) $(LIBS) $(FUZZLIB) @CRYPTLIB@
 
 fuzzer-kexcurve25519: fuzzer-kexcurve25519.o fuzz-harness.o
+	$(CXX) $(CXXFLAGS) $@.o $(LDFLAGS) $(svrfuzzobjs) -o $@$(EXEEXT) $(LIBTOM_LIBS) $(LIBS) $(FUZZLIB) @CRYPTLIB@
+
+fuzzer-kexcurve448: fuzzer-kexcurve448.o fuzz-harness.o
 	$(CXX) $(CXXFLAGS) $@.o $(LDFLAGS) $(svrfuzzobjs) -o $@$(EXEEXT) $(LIBTOM_LIBS) $(LIBS) $(FUZZLIB) @CRYPTLIB@
 
 fuzzer-%.options: Makefile

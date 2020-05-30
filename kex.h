@@ -57,6 +57,13 @@ void kexcurve25519_comb_key(const struct kex_curve25519_param *param, const buff
 		sign_key *hostkey);
 #endif
 
+#if DROPBEAR_CURVE448
+struct kex_curve448_param *gen_kexcurve448_param(void);
+void free_kexcurve448_param(struct kex_curve448_param *param);
+void kexcurve448_comb_key(const struct kex_curve448_param *param, const buffer *pub_them,
+		sign_key *hostkey);
+#endif
+
 #ifndef DISABLE_ZLIB
 int is_compress_trans(void);
 int is_compress_recv(void);
@@ -107,6 +114,14 @@ struct kex_ecdh_param {
 struct kex_curve25519_param {
 	unsigned char priv[CURVE25519_LEN];
 	unsigned char pub[CURVE25519_LEN];
+};
+#endif
+
+#if DROPBEAR_CURVE448
+#define CURVE448_LEN 56
+struct kex_curve448_param {
+	unsigned char priv[CURVE448_LEN];
+	unsigned char pub[CURVE448_LEN];
 };
 #endif
 
